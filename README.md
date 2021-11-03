@@ -1,6 +1,4 @@
-# exchange-rates
-
-===================
+# Exchange Rates Api
 
 Exchange Rates Api is a powered by Node.js software that is RESTful api
 application.
@@ -25,7 +23,7 @@ COP | 3203.18
 
 `npm install`
 
-## Packages installed:
+## Packages
 
 **Express**: A lightweight Node.js web framework for spinning up RESTful APIs.
 We will use this to handle routing in our backend API<br/> **body-parser**: A
@@ -53,7 +51,7 @@ An Automatic REST JSON API Testing system has been implemented using Mocha &
 Chai. By simply running `mocha` should test the api endpoints.
 
 ## Manually Testing the Endpoints
-To test the Api, please use Postman (`https://www.postman.com/`) to make a call to the api `POST https://exc-rates.herokuapp.com/rates` passing these as the payload;
+To test the Api, please use Postman (https://www.postman.com/) to make a call to the api `POST https://exc-rates.herokuapp.com/rates` passing these as the payload;
 ```
 formData: {
     'from': 'eur',
