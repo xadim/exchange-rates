@@ -53,7 +53,7 @@ An Automatic REST JSON API Testing system has been implemented using Mocha &
 Chai. By simply running `mocha` should test the api endpoints.
 
 ## Manually Testing the Endpoints
-use Postman to call the api passing these as the payload;
+To test the Api, please use Postman (`https://www.postman.com/`) to make a call to the api `POST https://exc-rates.herokuapp.com/rates` passing these as the payload;
 ```
 formData: {
     'from': 'eur',
@@ -65,11 +65,14 @@ formData: {
 }
 ```
 
+The Api Endpoint `GET https://exc-rates.herokuapp.com/rates` returns all the Exchange rates from USD
 ## Demo Project
 
 The project has been deployed on firebase and a demo can be seen here
 https://exc-rates.herokuapp.com/rates
 
+## App Version Number 
+**5b8d0fd276b6d288905ed2f63a934e057e8feca2**
 ## TODO / Features
 
 1. Add rates to MongoDB
