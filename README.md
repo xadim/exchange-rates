@@ -44,7 +44,7 @@ framework.<br/>**SuperTest**: HTTP assertions made easy.
 ## Development server
 
 Run `nodemon server.js --inspect` for a dev server. Navigate to
-`http://localhost:5000/`. The app will automatically reload if you change any of
+`http://localhost:4444/`. The app will automatically reload if you change any of
 the source files.
 
 ## Automated API test
@@ -54,19 +54,21 @@ Chai. By simply running `mocha` should test the api endpoints.
 
 ## Manually Testing the Endpoints
 use Postman to call the api passing these as the payload;
-`<addr>`formData: {
-    `<addr>`'from': 'eur',
-    `<addr>`'amount': ' 13.12',
-    `<addr>`'to': 'gbp',
-    `<addr>`'amount2': '99',
-    `<addr>`'action': 'add',
-    `<addr>`'currency': 'cad'
-`<addr>`}
+```
+formData: {
+    'from': 'eur',
+    'amount': ' 13.12',
+    'to': 'gbp',
+    'amount2': '99',
+    'action': 'add',
+    'currency': 'cad'
+}
+```
 
 ## Demo Project
 
 The project has been deployed on firebase and a demo can be seen here
-https://exchange-rates.heroku.com/
+https://exc-rates.herokuapp.com/rates
 
 ## TODO / Features
 
