@@ -2,18 +2,8 @@
 
 const express = require("express");
 const router = express.Router();
-const exchangeRates = [
-  { currencyCode: "usd", exchangeRate: 1 },
-  { currencyCode: "eur", exchangeRate: 0.87815 },
-  { currencyCode: "gbp", exchangeRate: 0.78569 },
-  { currencyCode: "cad", exchangeRate: 1.31715 },
-  { currencyCode: "inr", exchangeRate: 69.3492 },
-  { currencyCode: "mxn", exchangeRate: 19.2316 },
-  { currencyCode: "aud", exchangeRate: 1.43534 },
-  { currencyCode: "cny", exchangeRate: 6.88191 },
-  { currencyCode: "myr", exchangeRate: 4.13785 },
-  { currencyCode: "cop", exchangeRate: 3203.18 },
-];
+const exchangeRates = require("../models/rates");
+const serviceRates = require("../services/rates");
 
 /**
  * Returns all rates
@@ -22,14 +12,17 @@ router.get("/", async (req, res) => {
   try {
         res.status(200).json({
           success: true,
-          data: exchangeRates,
+          data: exchangeRates(),
         });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// Exchange Rate Conversion
+/**
+ * 
+ * Exchange Rate Conversion
+ */
 router.post("/", async (req, res) => {
     const data = req.body;
     if (data.action) {
@@ -56,8 +49,8 @@ let convertRate = async (data) => {
 
   const rate =
     to === "usd"
-      ? await getRate(from)
-      : await getRate(to);
+      ? await serviceRates.getRate(from)
+      : await serviceRates.getRate(to);
 
   switch (to) {
     case "usd":
@@ -66,7 +59,7 @@ let convertRate = async (data) => {
     default:
       returned = amount * rate[0].exchangeRate;
       if (from !== "usd") {
-        const dollar = await toDollar(amount, from);
+        const dollar = await serviceRates.toDollar(amount, from);
         returned = dollar * rate[0].exchangeRate;
       }
   }
@@ -80,9 +73,9 @@ let convertRate = async (data) => {
  */
 let rateCalculator = async (data) => {
   const { from, amount, to, amount2, action, currency } = data;
-  const rateCurrency = await getRate(currency),
-    dollarAmount = await toDollar(amount, from),
-    dollarAmount2 = await toDollar(amount2, to);
+  const rateCurrency = await serviceRates.getRate(currency),
+    dollarAmount = await serviceRates.toDollar(amount, from),
+    dollarAmount2 = await serviceRates.toDollar(amount2, to);
     switch(action) {
       case "sub":
         totalInDollar = dollarAmount - dollarAmount2;
@@ -96,24 +89,5 @@ let rateCalculator = async (data) => {
       )} ${currency.toUpperCase()}`;
   return message;
 }
-
-/**
- * Converts currency to Dollar
- * @param {*} amount 
- * @param {*} currency 
- * @returns 
- */
-let toDollar = async (amount, currency) => {
-  rate = exchangeRates.filter((exRate) => exRate.currencyCode === currency);
-  return amount / rate[0].exchangeRate;
-}
-
-/**
- * Returns the rate object
- * @param {*} currency 
- * @returns 
- */
-let getRate = async currency => 
-  exchangeRates.filter((exRate) => exRate.currencyCode === currency);
 
 module.exports = router;

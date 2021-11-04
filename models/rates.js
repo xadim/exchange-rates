@@ -1,40 +1,16 @@
-const mongoose = require("mongoose");
-
-const Rateschema = new mongoose.Schema(
-  {
-    currencyCode: {
-      type: String,
-      required: true,
-      maxLength: 30,
-    },
-    exchangeRate: {
-      type: Number,
-      required: true,
-      maxLength: 12,
-    },
-    createdDate: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
-    updatedDate: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
-    deletedDate: {
-      type: Date,
-    },
-  },
-  {
-    writeConcern: {
-      w: "majority",
-      j: true,
-      wtimeout: 1000,
-    },
-  }
-);
-const Rate = mongoose.model("Rate", Rateschema);
-Rate.createIndexes();
-
-module.exports = Rate;
+let rates = () => {
+  const rates = [
+    { currencyCode: "usd", exchangeRate: 1 },
+    { currencyCode: "eur", exchangeRate: 0.87815 },
+    { currencyCode: "gbp", exchangeRate: 0.78569 },
+    { currencyCode: "cad", exchangeRate: 1.31715 },
+    { currencyCode: "inr", exchangeRate: 69.3492 },
+    { currencyCode: "mxn", exchangeRate: 19.2316 },
+    { currencyCode: "aud", exchangeRate: 1.43534 },
+    { currencyCode: "cny", exchangeRate: 6.88191 },
+    { currencyCode: "myr", exchangeRate: 4.13785 },
+    { currencyCode: "cop", exchangeRate: 3203.18 },
+  ];
+  return rates;
+}
+module.exports = rates;
