@@ -52,17 +52,7 @@ let convertRate = async (data) => {
       ? await serviceRates.getRate(from)
       : await serviceRates.getRate(to);
 
-  switch (to) {
-    case "usd":
-      returned = amount / rate[0].exchangeRate;
-      break;
-    default:
-      returned = amount * rate[0].exchangeRate;
-      if (from !== "usd") {
-        const dollar = await serviceRates.toDollar(amount, from);
-        returned = dollar * rate[0].exchangeRate;
-      }
-  }
+  returned = await serviceRates.convertingRate(to, amount, rate, from);
   return `Exchange Rate: ${amount} ${from.toUpperCase()} is ${returned.toFixed(2)} ${to.toUpperCase()}`;
 }
 
@@ -72,22 +62,25 @@ let convertRate = async (data) => {
  * @returns 
  */
 let rateCalculator = async (data) => {
-  const { from, amount, to, amount2, action, currency } = data;
-  const rateCurrency = await serviceRates.getRate(currency),
-    dollarAmount = await serviceRates.toDollar(amount, from),
-    dollarAmount2 = await serviceRates.toDollar(amount2, to);
-    switch(action) {
-      case "sub":
-        totalInDollar = dollarAmount - dollarAmount2;
-        break;
-      default:
-        totalInDollar = dollarAmount + dollarAmount2;
-    }
-    const returned = totalInDollar * rateCurrency[0].exchangeRate,
-      message = `Exchange Rate: Add ${amount} ${from.toUpperCase()} to ${amount2} ${to.toUpperCase()} is ${returned.toFixed(
+  try {
+    const { from, amount, to, amount2, action, currency } = data;
+    const rateCurrency = await serviceRates.getRate(currency),
+      dollarAmount = await serviceRates.toDollar(amount, from),
+      dollarAmount2 = await serviceRates.toDollar(amount2, to);
+    const totalInDollar = await serviceRates.operationsRate(
+      dollarAmount,
+      dollarAmount2,
+      action
+    );
+    const returned = await serviceRates.operationsRate(totalInDollar, rateCurrency[0].exchangeRate, 'multi');
+    const message = `Exchange Rate: Add ${amount} ${from.toUpperCase()} to ${amount2} ${to.toUpperCase()} is ${returned.toFixed(
         2
       )} ${currency.toUpperCase()}`;
-  return message;
+    return message;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 }
 
 module.exports = router;
