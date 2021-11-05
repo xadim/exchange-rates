@@ -47,13 +47,20 @@ let convertRate = async (data) => {
   const { from, to, amount } = data;
   let returned = 0;
 
-  const rate =
-    to === "usd"
-      ? await serviceRates.getRate(from)
-      : await serviceRates.getRate(to);
+  try {
+    const rate =
+      to === "usd"
+        ? await serviceRates.getRate(from)
+        : await serviceRates.getRate(to);
 
-  returned = await serviceRates.convertingRate(to, amount, rate, from);
-  return `Exchange Rate: ${amount} ${from.toUpperCase()} is ${returned.toFixed(2)} ${to.toUpperCase()}`;
+    returned = await serviceRates.convertingRate(to, amount, rate, from);
+    return `Exchange Rate: ${amount} ${from.toUpperCase()} is ${returned.toFixed(
+      2
+    )} ${to.toUpperCase()}`;
+  } catch (error) {
+    console.log(error);
+    return returned;
+  }
 }
 
 /**
