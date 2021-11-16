@@ -6,7 +6,7 @@ const exchangeRates = require("../models/rates");
  * @param {*} currency
  * @returns
  */
-let toDollar = async (amount, currency) => {
+const toDollar = (amount, currency) => {
   rate = exchangeRates().filter((exRate) => exRate.currencyCode === currency);
   return amount / rate[0].exchangeRate;
 };
@@ -49,7 +49,7 @@ const operationsRate = (currency1, currency2, action) => {
  * @param {*} from 
  * @returns 
  */
-let convertingRate = async(to, amount, rate, from) => {
+const convertingRate = (to, amount, rate, from) => {
     switch (to) {
       case "usd":
         returned = amount / rate[0].exchangeRate;
@@ -57,11 +57,43 @@ let convertingRate = async(to, amount, rate, from) => {
       default:
         returned = amount * rate[0].exchangeRate;
         if (from !== "usd") {
-          const dollar = await toDollar(amount, from);
+          const dollar = toDollar(amount, from);
           returned = dollar * rate[0].exchangeRate;
         }
     }
     return returned;
 }
 
-module.exports = { getRate, toDollar, operationsRate, convertingRate };
+/**
+ * 
+ * @param {*} data 
+ * @param {*} totalInDollar 
+ * @param {*} rateCurrency 
+ * @param {*} requestedService 
+ * @param {*} op 
+ * @returns array object
+ */
+const returnBuilder = (data, total, requestedService, op) => {
+  const { from, amount, to, amount2, currency } = data;
+  let message = `Exchange Rate: ${amount} ${from.toUpperCase()} is ${total.toFixed(
+    2
+  )} ${to.toUpperCase()}`;
+
+  if (requestedService === "calculate") {
+    message = `Exchange Rate: ${op.toUpperCase()} ${amount} ${from.toUpperCase()} to ${amount2} ${to.toUpperCase()} is ${total.toFixed(
+      2
+    )} ${currency.toUpperCase()}`;
+  }
+  return {
+    amount: parseFloat(total.toFixed(2)),
+    message: message,
+  };
+};
+
+module.exports = {
+  getRate,
+  toDollar,
+  operationsRate,
+  convertingRate,
+  returnBuilder,
+};

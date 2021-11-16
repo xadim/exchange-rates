@@ -8,7 +8,7 @@ const serviceRates = require("../services/rates");
 /**
  * Returns all rates
  */
-router.get("/", async (req, res) => {
+router.get("/", (req, res) => {
   try {
         res.status(200).json({
           success: true,
@@ -23,15 +23,15 @@ router.get("/", async (req, res) => {
  * 
  * Exchange Rate Conversion
  */
-router.post("/", async (req, res) => {
+router.post("/", (req, res) => {
     const data = req.body;
     if (data.action) {
       return res.json({
-        data: await rateCalculator(data)
+        data: rateCalculator(data)
       });
     } else {
       return res.json({
-        data: await convertRate(data)
+        data: convertRate(data)
       });
     }
 });
@@ -41,29 +41,20 @@ router.post("/", async (req, res) => {
  * @param {*} data 
  * @returns 
  */
-let convertRate = async (data) => {
+const convertRate = (data) => {
   const { from, to, amount } = data;
-  let returned = 0;
+  let total = 0;
   try {
     const rate =
       to === "usd"
-        ? await serviceRates.getRate(from)
-        : await serviceRates.getRate(to);
+        ? serviceRates.getRate(from)
+        : serviceRates.getRate(to);
 
-    returned = await serviceRates.convertingRate(to, amount, rate, from);
-    
-    const message = `Exchange Rate: ${amount} ${from.toUpperCase()} is ${returned.toFixed(
-      2
-    )} ${to.toUpperCase()}`;
-
-    const toBeReturned = {
-      amount: parseFloat(returned.toFixed(2)),
-      message: message,
-    };
-    return toBeReturned;
+    total = serviceRates.convertingRate(to, amount, rate, from);  
+    return serviceRates.returnBuilder(data, total, 'convert');
   } catch (error) {
     console.log(error);
-    return returned;
+    return total;
   }
 }
 
@@ -72,28 +63,30 @@ let convertRate = async (data) => {
  * @param {*} data 
  * @returns 
  */
-let rateCalculator = async (data) => {
+const rateCalculator = (data) => {
   try {
     const { from, amount, to, amount2, action, currency } = data;
-    const rateCurrency = await serviceRates.getRate(currency),
-      dollarAmount = await serviceRates.toDollar(amount, from),
-      dollarAmount2 = await serviceRates.toDollar(amount2, to);
-    const totalInDollar = await serviceRates.operationsRate(
+    const rateCurrency = serviceRates.getRate(currency);
+    const dollarAmount = serviceRates.toDollar(amount, from);
+    const dollarAmount2 = serviceRates.toDollar(amount2, to);
+    const totalInDollar = serviceRates.operationsRate(
       dollarAmount,
       dollarAmount2,
       action
     );
-    
-    const returned = await serviceRates.operationsRate(totalInDollar, rateCurrency[0].exchangeRate, 'multi');
 
-    const message = `Exchange Rate: Add ${amount} ${from.toUpperCase()} to ${amount2} ${to.toUpperCase()} is ${returned.toFixed(
-        2
-      )} ${currency.toUpperCase()}`;
-    const toRet = {
-      amount: parseFloat(returned.toFixed(2)),
-      message: message,
-    };
-    return toRet;
+    const totalConverted = serviceRates.operationsRate(
+      totalInDollar,
+      rateCurrency[0].exchangeRate,
+      "multi"
+    );
+    
+    return serviceRates.returnBuilder(
+      data,
+      totalConverted,
+      "calculate",
+      action
+    );
   } catch (error) {
     console.log(error);
     return error;
