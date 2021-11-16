@@ -16,7 +16,7 @@ let toDollar = async (amount, currency) => {
  * @param {*} currency
  * @returns
  */
-let getRate = async (currency) =>
+const getRate = (currency) =>
   exchangeRates().filter((exRate) => exRate.currencyCode === currency);
 
 /**
@@ -24,7 +24,7 @@ let getRate = async (currency) =>
  * @params {*} currency1, currency2, action
  * @returns
  */
-let operationsRate = async (currency1, currency2, action) => {
+const operationsRate = (currency1, currency2, action) => {
     switch (action) {
       case "sub":
         totalInDollar = currency1 - currency2;
