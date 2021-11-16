@@ -51,6 +51,7 @@ let convertRate = async (data) => {
         : await serviceRates.getRate(to);
 
     returned = await serviceRates.convertingRate(to, amount, rate, from);
+    
     const message = `Exchange Rate: ${amount} ${from.toUpperCase()} is ${returned.toFixed(
       2
     )} ${to.toUpperCase()}`;
@@ -82,7 +83,9 @@ let rateCalculator = async (data) => {
       dollarAmount2,
       action
     );
+    
     const returned = await serviceRates.operationsRate(totalInDollar, rateCurrency[0].exchangeRate, 'multi');
+
     const message = `Exchange Rate: Add ${amount} ${from.toUpperCase()} to ${amount2} ${to.toUpperCase()} is ${returned.toFixed(
         2
       )} ${currency.toUpperCase()}`;
