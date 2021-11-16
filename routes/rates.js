@@ -27,13 +27,11 @@ router.post("/", async (req, res) => {
     const data = req.body;
     if (data.action) {
       return res.json({
-        message: await rateCalculator(data),
-        success: true,
+        data: await rateCalculator(data)
       });
     } else {
       return res.json({
-        message: await convertRate(data),
-        success: true,
+        data: await convertRate(data)
       });
     }
 });
@@ -46,7 +44,6 @@ router.post("/", async (req, res) => {
 let convertRate = async (data) => {
   const { from, to, amount } = data;
   let returned = 0;
-
   try {
     const rate =
       to === "usd"
@@ -54,9 +51,15 @@ let convertRate = async (data) => {
         : await serviceRates.getRate(to);
 
     returned = await serviceRates.convertingRate(to, amount, rate, from);
-    return `Exchange Rate: ${amount} ${from.toUpperCase()} is ${returned.toFixed(
+    const message = `Exchange Rate: ${amount} ${from.toUpperCase()} is ${returned.toFixed(
       2
     )} ${to.toUpperCase()}`;
+
+    const toBeReturned = {
+      amount: parseFloat(returned.toFixed(2)),
+      message: message,
+    };
+    return toBeReturned;
   } catch (error) {
     console.log(error);
     return returned;
@@ -83,7 +86,11 @@ let rateCalculator = async (data) => {
     const message = `Exchange Rate: Add ${amount} ${from.toUpperCase()} to ${amount2} ${to.toUpperCase()} is ${returned.toFixed(
         2
       )} ${currency.toUpperCase()}`;
-    return message;
+    const toRet = {
+      amount: parseFloat(returned.toFixed(2)),
+      message: message,
+    };
+    return toRet;
   } catch (error) {
     console.log(error);
     return error;

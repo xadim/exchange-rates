@@ -50,7 +50,7 @@ describe("exchangerate API test", () => {
       .expect("Content-Type", /json/)
       .end((error, resp) => {
         chai;
-        expect(JSON.parse(resp.text).success).to.be.true;
+        expect(JSON.parse(resp.text).data.amount).to.be.equal(11.74);
       });
     done();
   });
@@ -73,7 +73,7 @@ describe("exchangerate API test", () => {
       .expect("Content-Type", /json/)
       .end((error, resp) => {
         chai;
-        expect(JSON.parse(resp.text).success).to.be.true;
+        expect(JSON.parse(resp.text).data.amount).to.be.equal(185.64);
       });
     done();
   });
