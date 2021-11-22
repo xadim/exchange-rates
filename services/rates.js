@@ -20,6 +20,26 @@ const getRate = (currency) =>
   exchangeRates().filter((exRate) => exRate.currencyCode === currency);
 
 /**
+ * 
+ * @param {*} from 
+ * @param {*} to 
+ * @returns number
+ */
+const getNewExchangeRate = (from, to) => {
+// 1eur = 1.14
+// 1gbp = 1.27
+// 1.14 => 1eur
+// 1.27 => ?eur
+
+  const fromRate = getRate(from);
+  const toRate = getRate(to);
+
+  const exR = fromRate[0].eqInDollar / toRate[0].eqInDollar;
+  return exR.toFixed(2);
+
+}
+
+/**
  * Returns the rate number
  * @params {*} currency1, currency2, action
  * @returns
@@ -81,7 +101,6 @@ const returnBuilder = (
   requestedService,
   op
 ) => {
-  console.log(data);
   const { from, amount, to, amount2, currency } = data;
   let message = `Exchange Rate: ${amount} ${from.toUpperCase()} is ${total.toFixed(
     2
@@ -97,6 +116,7 @@ const returnBuilder = (
     amount: parseFloat(total.toFixed(2)),
     exchangeRateFrom: exchangeRateFrom,
     exchangeRateTo: exchangeRateTo,
+    exchangeRateReturned: parseFloat(getNewExchangeRate(from, to)),
     message: message,
   };
 };
