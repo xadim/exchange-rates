@@ -45,13 +45,18 @@ const convertRate = (data) => {
   const { from, to, amount } = data;
   let total = 0;
   try {
-    const rate =
-      to === "usd"
-        ? serviceRates.getRate(from)
-        : serviceRates.getRate(to);
+    const exchangeRateTo = serviceRates.getRate(to);
+    const exchangeRateFrom = serviceRates.getRate(from);
+    const rate = to === "usd" ? exchangeRateFrom : exchangeRateTo;
 
     total = serviceRates.convertingRate(to, amount, rate, from);  
-    return serviceRates.returnBuilder(data, total, 'convert');
+    return serviceRates.returnBuilder(
+      data,
+      total,
+      exchangeRateTo,
+      exchangeRateFrom,
+      "convert"
+    );
   } catch (error) {
     console.log(error);
     return total;
@@ -74,7 +79,9 @@ const rateCalculator = (data) => {
       dollarAmount2,
       action
     );
-
+    const exchangeRateTo = serviceRates.getRate(to);
+    const exchangeRateFrom = serviceRates.getRate(from);
+    
     const totalConverted = serviceRates.operationsRate(
       totalInDollar,
       rateCurrency[0].exchangeRate,
@@ -84,6 +91,8 @@ const rateCalculator = (data) => {
     return serviceRates.returnBuilder(
       data,
       totalConverted,
+      exchangeRateFrom,
+      rateCurrency,
       "calculate",
       action
     );

@@ -73,7 +73,15 @@ const convertingRate = (to, amount, rate, from) => {
  * @param {*} op 
  * @returns array object
  */
-const returnBuilder = (data, total, requestedService, op) => {
+const returnBuilder = (
+  data,
+  total,
+  exchangeRateTo,
+  exchangeRateFrom, 
+  requestedService,
+  op
+) => {
+  console.log(data);
   const { from, amount, to, amount2, currency } = data;
   let message = `Exchange Rate: ${amount} ${from.toUpperCase()} is ${total.toFixed(
     2
@@ -85,7 +93,10 @@ const returnBuilder = (data, total, requestedService, op) => {
     )} ${currency.toUpperCase()}`;
   }
   return {
+    amountSend: amount2,
     amount: parseFloat(total.toFixed(2)),
+    exchangeRateFrom: exchangeRateFrom,
+    exchangeRateTo: exchangeRateTo,
     message: message,
   };
 };
